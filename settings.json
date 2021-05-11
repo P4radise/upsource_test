@@ -7,7 +7,7 @@
 
     "urlUpsource": "url",
     "userNameUpsource": "Full Name",
-    "tokenUpsource": "login",
+    "tokenUpsource": "token",
 
     "products": [
         {
