@@ -10,7 +10,6 @@ basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth('Bearer')
 multi_auth = MultiAuth(basic_auth, token_auth)
 
-
 @basic_auth.verify_password
 def verify_password(username, password):
     with open(SETTINGS_FILE, "rb") as PFile:
@@ -24,7 +23,7 @@ def verify_password(username, password):
 def verify_token(token):
     with open(SETTINGS_FILE, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
-    
+
     if token == password_data['tokenUpsource']:
         return token
 
