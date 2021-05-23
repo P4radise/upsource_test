@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_httpauth import HTTPTokenAuth, HTTPBasicAuth, MultiAuth
-from constants import *
+import constants
 import json
 import re
 
@@ -12,7 +12,7 @@ multi_auth = MultiAuth(basic_auth, token_auth)
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    with open(SETTINGS_FILE, "rb") as PFile:
+    with open(constants.SETTINGS_FILE, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if username == password_data['loginUpsource'] \
@@ -21,7 +21,7 @@ def verify_password(username, password):
 
 @token_auth.verify_token
 def verify_token(token):
-    with open(SETTINGS_FILE, "rb") as PFile:
+    with open(constants.SETTINGS_FILE, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if token == password_data['tokenUpsource']:
@@ -32,15 +32,15 @@ def verify_token(token):
 def get_filtered_revision_list():
     query = request.get_json()['query']
 
-    if query not in (Issue.IHUB_146144.issue_id, Issue.DEPL_125306.issue_id):
-        return make_response(f'Revision for {query} not found', StatusCode.EXCEPTION.value)
+    if query not in (constants.Issue.IHUB_146144.issue_id, constants.Issue.DEPL_125306.issue_id):
+        return make_response(f'Revision for {query} not found', constants.StatusCode.EXCEPTION.value)
 
-    if query == Issue.IHUB_146144.issue_id:
-        json_data = {'result': {'revision': [{'revisionId': Review.BLNK_CR_128.review_id, 
-                'revisionCommitMessage': f'{Issue.IHUB_146144.issue_id} {Issue.IHUB_146144.summary}\n'}]}}
-    elif query == Issue.DEPL_125306.issue_id:
-        json_data = {'result': {'revision': [{'revisionId': Review.BLNK_CR_127.review_id, 
-                'revisionCommitMessage': f'{Issue.DEPL_125306.issue_id} {Issue.DEPL_125306.summary}\n'}]}}
+    if query == constants.Issue.IHUB_146144.issue_id:
+        json_data = {'result': {'revision': [{'revisionId': constants.Review.BLNK_CR_128.review_id, 
+                'revisionCommitMessage': f'{constants.Issue.IHUB_146144.issue_id} {constants.Issue.IHUB_146144.summary}\n'}]}}
+    elif query == constants.Issue.DEPL_125306.issue_id:
+        json_data = {'result': {'revision': [{'revisionId': constants.Review.BLNK_CR_127.review_id, 
+                'revisionCommitMessage': f'{constants.Issue.DEPL_125306.issue_id} {constants.Issue.DEPL_125306.summary}\n'}]}}
     else:
         json_data = {'result': {'query': f'{query}'}}
 
@@ -51,8 +51,8 @@ def get_filtered_revision_list():
 def close_review():
     review_id = request.get_json()['reviewId']['reviewId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
     return review_id
 
@@ -61,12 +61,12 @@ def close_review():
 def get_branch():
     query = request.get_json()['query']
 
-    if query == Issue.IHUB_146144.issue_id:
+    if query == constants.Issue.IHUB_146144.issue_id:
         json_data =  {'result': {'defaultBranch': 'master'}}
-    elif query == Issue.DEPL_125306.issue_id:
-        json_data = {'result': {'branch': [{'name': Issue.DEPL_125306.issue_id}]}}
+    elif query == constants.Issue.DEPL_125306.issue_id:
+        json_data = {'result': {'branch': [{'name': constants.Issue.DEPL_125306.issue_id}]}}
     else:
-        return make_response(f'Branch {query} not found', StatusCode.EXCEPTION.value)
+        return make_response(f'Branch {query} not found', constants.StatusCode.EXCEPTION.value)
 
     return json_data
 
@@ -75,8 +75,8 @@ def get_branch():
 def start_branch_tracking():
     review_id = request.get_json()['reviewId']['reviewId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
     return review_id
 
@@ -85,14 +85,14 @@ def start_branch_tracking():
 def find_users():
     pattern = request.get_json()['pattern']
 
-    if pattern == User.ASMOISEENKO.user_name:
-        json_data = {'result': {'infos': [{'userId': User.ASMOISEENKO.user_id}]}}
-    elif pattern == User.VADIM.user_name:
-        json_data = {'result': {'infos': [{'userId': User.VADIM.user_id}]}}
-    elif pattern == User.ILYA_EMELYANOV.user_name:
-        json_data = {'result': {'infos': [{'userId': User.ILYA_EMELYANOV.user_id}]}}
+    if pattern == constants.User.ASMOISEENKO.user_name:
+        json_data = {'result': {'infos': [{'userId': constants.User.ASMOISEENKO.user_id}]}}
+    elif pattern == constants.User.VADIM.user_name:
+        json_data = {'result': {'infos': [{'userId': constants.User.VADIM.user_id}]}}
+    elif pattern == constants.User.ILYA_EMELYANOV.user_name:
+        json_data = {'result': {'infos': [{'userId': constants.User.ILYA_EMELYANOV.user_id}]}}
     else:
-        return make_response(f'Cannot resolve pattern {pattern}', StatusCode.EXCEPTION.value)
+        return make_response(f'Cannot resolve pattern {pattern}', constants.StatusCode.EXCEPTION.value)
 
     return json_data
 
@@ -102,11 +102,11 @@ def update_participant_status():
     review_id = request.get_json()['reviewId']['reviewId']
     user_id = request.get_json()['userId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
-    if user_id not in SUPPORTED_USERS:
-        return make_response(f'Cannot resolve user id {user_id}', StatusCode.EXCEPTION.value)
+    if user_id not in constants.SUPPORTED_USERS:
+        return make_response(f'Cannot resolve user id {user_id}', constants.StatusCode.EXCEPTION.value)
 
     return user_id
 
@@ -116,11 +116,11 @@ def add_reviewer():
     review_id = request.get_json()['reviewId']['reviewId']
     user_id = request.get_json()['participant']['userId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
-    if user_id not in SUPPORTED_USERS:
-        return make_response(f'Cannot resolve user id {user_id}', StatusCode.EXCEPTION.value)
+    if user_id not in constants.SUPPORTED_USERS:
+        return make_response(f'Cannot resolve user id {user_id}', constants.StatusCode.EXCEPTION.value)
 
     return user_id
 
@@ -130,11 +130,11 @@ def remove_reviewer():
     review_id = request.get_json()['reviewId']['reviewId']
     user_id = request.get_json()['participant']['userId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
-    if user_id not in SUPPORTED_USERS:
-        return make_response(f'Cannot resolve user id {user_id}', StatusCode.EXCEPTION.value)
+    if user_id not in constants.SUPPORTED_USERS:
+        return make_response(f'Cannot resolve user id {user_id}', constants.StatusCode.EXCEPTION.value)
 
     return user_id
 
@@ -143,22 +143,22 @@ def remove_reviewer():
 def get_reviews():
     query = request.get_json()['query']
 
-    if query not in (Issue.IHUB_146144.issue_id, Issue.DEPL_125306.issue_id, Review.BLNK_CR_127.review_key, Review.BLNK_CR_128.review_key, 'state: open'):
-        return make_response(f'Review for {query} not found', StatusCode.EXCEPTION.value)
+    if query not in (constants.Issue.IHUB_146144.issue_id, constants.Issue.DEPL_125306.issue_id, constants.Review.BLNK_CR_127.review_key, constants.Review.BLNK_CR_128.review_key, 'state: open'):
+        return make_response(f'constants.Review for {query} not found', constants.StatusCode.EXCEPTION.value)
 
-    with open(SETTINGS_FILE, 'rb') as PFile:
+    with open(constants.SETTINGS_FILE, 'rb') as PFile:
         settings_url = json.loads(PFile.read().decode('utf-8'))['urlOneVizion']
-    blnk_cr_127_review_json_data = json.loads(re.sub('settings_url/', settings_url, json.dumps(BLNK_CR_127_REVIEW_JSON_DATA)))
+    blnk_cr_127_review_json_data = json.loads(re.sub('settings_url/', settings_url, json.dumps(constants.BLNK_CR_127_REVIEW_JSON_DATA)))
     
 
-    if query == Issue.IHUB_146144.issue_id:
+    if query == constants.Issue.IHUB_146144.issue_id:
         json_data = {'result': {'hasMore': False, 'totalCount': 0}}
-    elif query == Review.BLNK_CR_128.review_key:
-        json_data = {'result':{'reviews':[BLNK_CR_128_REVIEW_JSON_DATA]}}
-    elif query in (Issue.DEPL_125306.issue_id, Review.BLNK_CR_127.review_key):
+    elif query == constants.Review.BLNK_CR_128.review_key:
+        json_data = {'result':{'reviews':[constants.BLNK_CR_128_REVIEW_JSON_DATA]}}
+    elif query in (constants.Issue.DEPL_125306.issue_id, constants.Review.BLNK_CR_127.review_key):
         json_data = {'result':{'reviews':[blnk_cr_127_review_json_data]}}
     elif query == 'state: open':
-        json_data = {'result':{'reviews':[blnk_cr_127_review_json_data, BLNK_CR_128_REVIEW_JSON_DATA]}}
+        json_data = {'result':{'reviews':[blnk_cr_127_review_json_data, constants.BLNK_CR_128_REVIEW_JSON_DATA]}}
     else:
         json_data = {'result': {'hasMore': False, 'totalCount': 0}}
 
@@ -169,8 +169,8 @@ def get_reviews():
 def rename_review():
     review_id = request.get_json()['reviewId']['reviewId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
     return review_id
 
@@ -179,13 +179,13 @@ def rename_review():
 def create_review():
     revisions = request.get_json()['revisions']
 
-    if revisions == Review.BLNK_CR_128.review_id:
-        json_data = {'result':{'reviews':[BLNK_CR_128_REVIEW_JSON_DATA]}}
-    elif revisions == Review.BLNK_CR_127.review_id:
-        return make_response(f'Cannot create review because revision {revisions} is already in review Review(reviewId=ReviewId[{Review.BLNK_CR_127.review_id}], \
-                                title=\'{Issue.DEPL_125306.issue_id} {Issue.DEPL_125306.summary}\'', StatusCode.EXCEPTION.value)
+    if revisions == constants.Review.BLNK_CR_128.review_id:
+        json_data = {'result':{'reviews':[constants.BLNK_CR_128_REVIEW_JSON_DATA]}}
+    elif revisions == constants.Review.BLNK_CR_127.review_id:
+        return make_response(f'Cannot create review because revision {revisions} is already in review constants.Review(reviewId=ReviewId[{constants.Review.BLNK_CR_127.review_id}], \
+                                title=\'{constants.Issue.DEPL_125306.issue_id} {constants.Issue.DEPL_125306.summary}\'', constants.StatusCode.EXCEPTION.value)
     else:
-        return make_response(f'Cannot resolve revision {revisions} in project blank', StatusCode.EXCEPTION.value)
+        return make_response(f'Cannot resolve revision {revisions} in project blank', constants.StatusCode.EXCEPTION.value)
 
     return json_data
 
@@ -194,8 +194,8 @@ def create_review():
 def update_review_description():
     review_id = request.get_json()['reviewId']['reviewId']
 
-    if review_id not in SUPPORTED_REVIEWS:
-        return make_response(f'Review {review_id} not found', StatusCode.EXCEPTION.value)
+    if review_id not in constants.SUPPORTED_REVIEWS:
+        return make_response(f'constants.Review {review_id} not found', constants.StatusCode.EXCEPTION.value)
 
     return review_id
 

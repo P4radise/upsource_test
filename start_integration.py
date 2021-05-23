@@ -1,7 +1,8 @@
 from jsonschema import validate
-
 from integration_log import build_logger
-from upsource_integration import *
+from upsource_integration import Issue, IssueTask, Review, Integration
+import json
+import re
 
 with open('settings.json', "rb") as PFile:
     password_data = json.loads(PFile.read().decode('utf-8'))
@@ -12,7 +13,7 @@ with open('settings_schema.json', "rb") as PFile:
 try:
     validate(instance=password_data, schema=data_schema)
 except Exception as e:
-    raise Exception("Incorrect value in the settings file\n{}".format(str(e)))
+    raise Exception(f'Incorrect value in the settings file\n{str(e)}')
 
 url_upsource = password_data["urlUpsource"]
 user_name_upsource = password_data["userNameUpsource"]
