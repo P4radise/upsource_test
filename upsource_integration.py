@@ -44,7 +44,7 @@ class Integration:
                 if re.search(f'{StatusCode.UNAUTHORIZED.value}|{StatusCode.EXCEPTION.value}', str(e)) is None:
                     upsource_user = None
                 else:
-                    raise Exception(f'Failed to get_reviewers - {reviewer["name"]}. Exception [{re.split("-", str(e))[1]}]')
+                    raise IntegrationError(f'Failed to get_reviewers - {reviewer["name"]}. Exception [{re.split("-", str(e))[1]}]')
 
             if upsource_user is not None and 'infos' in upsource_user:
                 reviewer_id = upsource_user['infos'][0]['userId']
@@ -78,7 +78,7 @@ class Integration:
         try:
             revision_list = self.review.get_filtered_revision_list(issue_title, project_upsource)
         except Exception as e:
-            raise Exception(f'Failed to filtered_revision_list. Exception [{e}]')
+            raise IntegrationError(f'Failed to filtered_revision_list. Exception [{e}]')
 
         if revision_list is not None and 'revision' in revision_list:
             for revision in revision_list['revision']:
@@ -97,7 +97,7 @@ class Integration:
         try:
             review = self.review.create(revision_id, project_upsource)
         except Exception as e:
-            raise Exception(f'Failed to create_review. Exception [{e}]')
+            raise IntegrationError(f'Failed to create_review. Exception [{e}]')
 
         if len(review) > 0 and 'reviewId' in review:
             review_id = review['reviewId']['reviewId']
@@ -107,14 +107,14 @@ class Integration:
             try:
                 self.review.rename(review_id, review_title, project_upsource)
             except Exception as e:
-                raise Exception(f'Failed to rename_review. Exception [{e}]')
+                raise IntegrationError(f'Failed to rename_review. Exception [{e}]')
 
             self.set_branch_tracking(issue_title, review_id, project_upsource)
             if self.upsource_user_id is not None:
                 try:
                     self.review.delete_default_reviewer(self.upsource_user_id, review_id, ParticipantRole.REVIEWER.value, project_upsource)
                 except Exception as e:
-                    raise Exception(f'Failed to delete_default_reviewer. Exception [{e}]')
+                    raise IntegrationError(f'Failed to delete_default_reviewer. Exception [{e}]')
 
             self.log.info(f'Review for {str(issue_title)} created')
 
@@ -125,14 +125,14 @@ class Integration:
             if re.search(StatusCode.EXCEPTION.value, str(e)) is None:
                 branch_in_review = None
             else:
-                raise Exception(f'Failed to get_branch. Exception [{re.split("-", str(e))[1]}]')
+                raise IntegrationError(f'Failed to get_branch. Exception [{re.split("-", str(e))[1]}]')
 
         if branch_in_review is not None and 'branch' in branch_in_review:
             branch = branch_in_review['branch'][0]['name']
             try:
                 self.review.start_branch_tracking(branch, review_id, project_upsource)
             except Exception as e:
-                raise Exception(f'Failed to start_branch_tracking. Exception [{e}]')
+                raise IntegrationError(f'Failed to start_branch_tracking. Exception [{e}]')
 
     def check_open_reviews(self, project_upsource):
         review_list = self.review.get_list_on_query('state: open', project_upsource)
@@ -166,7 +166,7 @@ class Integration:
                             if re.search(StatusCode.EXCEPTION.value, e) is None:
                                 closed_review = None
                             else:
-                                raise Exception(f'Failed to close review. Exception [{re.split("-", e)[1]}]')
+                                raise IntegrationError(f'Failed to close review. Exception [{re.split("-", e)[1]}]')
 
                         if closed_review is not None:
                             self.log.debug(f'Review {str(review_id)} closed for Issue {issue_title}')
@@ -183,7 +183,7 @@ class Integration:
             try:
                 self.review.rename(review_id, review_title, project_upsource)
             except Exception as e:
-                raise Exception(f'Failed to rename_review. Exception [{e}]')
+                raise IntegrationError(f'Failed to rename_review. Exception [{e}]')
 
         return review_title
 
@@ -259,7 +259,7 @@ class Integration:
             try:
                 self.review.update_review_description(review_id, new_review_description, project_upsource)
             except Exception as e:
-                raise Exception(f'Failed to update_review_description. Exception [{e}]')
+                raise IntegrationError(f'Failed to update_review_description. Exception [{e}]')
 
     def find_riviewers(self, review_data, state):
         reviewers_list = []
@@ -294,7 +294,7 @@ class Integration:
                             try:
                                 self.review.remove_reviewer(reviewer, review_id, project_upsource)
                             except Exception as e:
-                                raise Exception(f'Failed to remove reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
+                                raise IntegrationError(f'Failed to remove reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
 
                         break
 
@@ -314,7 +314,7 @@ class Integration:
                                 self.review.add_reviewer(reviewer, review_id, project_upsource)
                                 reviewers_list.append(reviewer[ReviewerField.ID.value])
                             except Exception as e:
-                                raise Exception(f'Failed to add reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
+                                raise IntegrationError(f'Failed to add reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
                             break
 
     def update_participant_status_for_review(self, review_id, issue_title, project_upsource):
@@ -519,7 +519,7 @@ class Review:
         else:
             self.log.warning(f'Failed to filtered_revision_list. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
             return None
 
@@ -532,8 +532,8 @@ class Review:
         else:
             self.log.warning(f'Failed to close review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(f'{answer.status_code}-{answer.text}')
-            raise Exception(f'Failed to close review. Exception [{answer.text}]')
+                raise IntegrationError(f'{answer.status_code}-{answer.text}')
+            raise IntegrationError(f'Failed to close review. Exception [{answer.text}]')
 
     def get_branch(self, issue_title, project_upsource):
         url = f'{self.url_upsource}~rpc/getBranches'
@@ -544,8 +544,8 @@ class Review:
         else:
             self.log.warning(f'Failed to get_branch. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(f'{answer.status_code}-{answer.text}')
-            raise Exception(f'Failed to get_branch. Exception [{answer.text}]')
+                raise IntegrationError(f'{answer.status_code}-{answer.text}')
+            raise IntegrationError(f'Failed to get_branch. Exception [{answer.text}]')
 
     def start_branch_tracking(self, branch, review_id, project_upsource):
         url = f'{self.url_upsource}~rpc/startBranchTracking'
@@ -554,7 +554,7 @@ class Review:
         if answer.ok == False:
             self.log.warning(f'Failed to start_branch_tracking. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def find_user_in_upsource(self, reviewer_name, project_upsource):
         url = f'{self.url_upsource}~rpc/findUsers'
@@ -565,27 +565,27 @@ class Review:
             if len(result) > 0:
                 return result
             else:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
         else:
-            raise Exception(f'{answer.status_code}-{answer.text}')
+            raise IntegrationError(f'{answer.status_code}-{answer.text}')
 
     def get_upsource_user_id(self, project_upsource):
         try:
             upsource_user = self.find_user_in_upsource(self.user_name_upsource, project_upsource)
         except Exception as e:
             self.log.error(f'Failed to get_upsource_user_id - {self.user_name_upsource}. Exception [{e}]')
-            raise Exception(f'Failed to get_upsource_user_id - {self.user_name_upsource}. Exception [{e}]')
+            raise IntegrationError(f'Failed to get_upsource_user_id - {self.user_name_upsource}. Exception [{e}]')
 
         if upsource_user is not None and 'infos' in upsource_user:
             return upsource_user['infos'][0]['userId']
         else:
-            raise Exception(f'Failed to get_upsource_user_id - {self.user_name_upsource}')
+            raise IntegrationError(f'Failed to get_upsource_user_id - {self.user_name_upsource}')
 
     def update_participant_status(self, reviewer, state, review_id, project_upsource):
         try:
             self.update_participant_in_review(reviewer, state, review_id, project_upsource)
         except Exception as e:
-            raise Exception(f'Failed to update_participant_status for reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
+            raise IntegrationError(f'Failed to update_participant_status for reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{e}]')
 
     def update_participant_in_review(self, reviewer, state, review_id, project_upsource):
         url = f'{self.url_upsource}~rpc/updateParticipantInReview'
@@ -597,7 +597,7 @@ class Review:
         else:
             self.log.warning(f'Failed to update_participant_status for reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def add_reviewer(self, reviewer, review_id, project_upsource):
         url = f'{self.url_upsource}~rpc/addParticipantToReview'
@@ -609,7 +609,7 @@ class Review:
         else:
             self.log.warning(f'Failed to add reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def remove_reviewer(self, reviewer, review_id, project_upsource):
         url = f'{self.url_upsource}~rpc/removeParticipantFromReview'
@@ -621,13 +621,13 @@ class Review:
         else:
             self.log.warning(f'Failed to remove reviewer {str(reviewer[ReviewerField.OV_NAME.value])} to {str(review_id)} review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def get_list_on_query(self, query, project_upsource):
         try:
             review_data = self.get_reviews(query, project_upsource)
         except Exception as e:
-            raise Exception(f'Failed to get_reviews. Exception [{e}]')
+            raise IntegrationError(f'Failed to get_reviews. Exception [{e}]')
 
         return review_data
 
@@ -643,7 +643,7 @@ class Review:
         else:
             self.log.warning(f'Failed to get_reviews. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
             return None
 
@@ -655,7 +655,7 @@ class Review:
         if answer.ok == False:
             self.log.warning(f'Failed to delete_default_reviewer. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def rename(self, review_id, title, project_upsource):
         url = f'{self.url_upsource}~rpc/renameReview'
@@ -665,7 +665,7 @@ class Review:
         if answer.ok == False:
             self.log.warning(f'Failed to rename_review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
     def create(self, revision_id, project_upsource):
         url = f'{self.url_upsource}~rpc/createReview'
@@ -676,7 +676,7 @@ class Review:
         else:
             self.log.warning(f'Failed to create_review. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
 
             return None
 
@@ -691,7 +691,11 @@ class Review:
         if answer.ok == False:
             self.log.warning(f'Failed to update_review_description. Exception [{answer.text}]')
             if answer.status_code == StatusCode.EXCEPTION.value:
-                raise Exception(answer.text)
+                raise IntegrationError(answer.text)
+
+
+class IntegrationError(Exception):
+    pass
 
 
 class IssueStatus(Enum):
