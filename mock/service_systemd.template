@@ -1,0 +1,16 @@
+[Unit]
+Description=Upsource sync mock service
+After=network.target
+
+[Service]
+Type=forking
+User=${SERVICE_UN}
+WorkingDirectory=${SERVICE_PATH}
+EnvironmentFile=${SERVICE_PATH}/${SERVICE_ENV_FILENAME}.conf
+ExecStart=${SERVICE_PATH}/service_launcher.sh
+StandardOutput=${SERVICE_PATH}/run.out
+PIDFile=${SERVICE_PATH}/run.pid
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

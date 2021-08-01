@@ -13,11 +13,21 @@ The Mock Service is for testing Upsource Integration. The Mock Service uses [Fla
 3. Run Flask app: `flask run`
 
 
-## Script mode to install as service
+## Script mode to install as service (run from integration user)
 
 ```
 pip install Flask
 pip install Flask-HTTPAuth
 
+which flask || echo No flask in PATH!
 
+export SERVICE_NAME=upsource_sync_mock
+export SERVICE_PORT=8085
+export SERVICE_UN=$(whoami)
+export SERVICE_PATH=$(pwd)
+export SERVICE_ENV_FILENAME=service_env.conf
+
+(< service_env.template envsubst | tee "$SERVICE_ENV_FILENAME") >/dev/null
+(< service_systemd.template envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
+systemctl enable "$SERVICE_NAME" && systemctl start "$SERVICE_NAME"
 ```
