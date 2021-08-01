@@ -13,7 +13,7 @@ The Mock Service is for testing Upsource Integration. The Mock Service uses [Fla
 3. Run Flask app: `flask run`
 
 
-## Script mode to install as service (run from integration user)
+## Script mode to install as service (run from integration user and `mock` directory)
 
 ```
 pip install Flask
