@@ -63,7 +63,7 @@ fi
 cd "$(dirname "$0")" || exit 1
 
 # shellcheck disable=SC2086
-eval $_NOHUP "\"$SERVICE_COMMAND\"" "&" >"$SERVICE_OUT" 2>&1
+eval $_NOHUP "\"$SERVICE_COMMAND\"" $SERVICE_ARGS "&" >"$SERVICE_OUT" 2>&1
 
 echo $! >"$SERVICE_PID"
 echo "Service started."
