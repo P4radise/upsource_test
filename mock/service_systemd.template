@@ -8,7 +8,7 @@ User=${SERVICE_UN}
 WorkingDirectory=${SERVICE_PATH}
 EnvironmentFile=${SERVICE_PATH}/${SERVICE_ENV_FILENAME}
 ExecStart=${SERVICE_PATH}/service_launcher.sh
-StandardOutput=${SERVICE_PATH}/run.out
+StandardOutput=file:${SERVICE_PATH}/run.out
 PIDFile=${SERVICE_PATH}/run.pid
 SuccessExitStatus=143
 
