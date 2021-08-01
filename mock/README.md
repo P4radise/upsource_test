@@ -29,5 +29,7 @@ export SERVICE_ENV_FILENAME=service_env.conf
 chown $SERVICE_UN $SERVICE_ENV_FILENAME
 
 (< service_systemd.template envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
+
 systemctl enable "$SERVICE_NAME" && systemctl start "$SERVICE_NAME"
+systemctl status "$SERVICE_NAME"
 ```
