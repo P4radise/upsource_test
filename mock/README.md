@@ -13,23 +13,10 @@ The Mock Service is for testing Upsource Integration. The Mock Service uses [Fla
 3. Run Flask app: `flask run`
 
 
-## Script mode to install as service (run from `root` user and `mock` directory)
+## Script mode to install as service
 
-```
-pip3 install Flask
-pip3 install Flask-HTTPAuth
+Run: `sudo ./install_as_service.sh <integration path> [http port]`
 
-export SERVICE_NAME=upsource_sync_mock
-export SERVICE_PORT=8085
-export SERVICE_UN=u_[paste Integration ID here]
-export SERVICE_PATH=$(pwd)
-export SERVICE_ENV_FILENAME=service_env.conf
-
-(< service_env.template envsubst | tee "$SERVICE_ENV_FILENAME") >/dev/null
-chown $SERVICE_UN $SERVICE_ENV_FILENAME
-
-(< service_systemd.template envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
-
-systemctl enable "$SERVICE_NAME" && systemctl start "$SERVICE_NAME"
-systemctl status "$SERVICE_NAME"
-```
+where:
+- `<integration path>` is `/opt/site.onevizion.com_integration-scheduler/<integration ID>`
+- `[http port]` is optional HTTP port number to use in service (`8085` by default)
