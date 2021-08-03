@@ -37,10 +37,10 @@ fi
 echo "Service directory: $SERVICE_PATH"
 echo "$SERVICE_NAME will be run on $SERVICE_PORT under $SERVICE_UN user"
 
-(< service_env.template envsubst | tee "$SERVICE_ENV_FILE") >/dev/null
+(< "$(dirname "$0")/service_env.template" envsubst | tee "$SERVICE_ENV_FILE") >/dev/null
 chown $SERVICE_UN $SERVICE_ENV_FILE
 
-(< service_systemd.template envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
+(< "$(dirname "$0")/service_systemd.template" envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
 
 systemctl enable "$SERVICE_NAME" && systemctl start "$SERVICE_NAME"
 systemctl status "$SERVICE_NAME"
