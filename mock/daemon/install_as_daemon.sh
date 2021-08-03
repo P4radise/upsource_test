@@ -42,5 +42,7 @@ chown $SERVICE_UN "$(dirname "$0")/service_env.conf"
 
 (< "$(dirname "$0")/service_systemd.template" envsubst | tee "/usr/lib/systemd/system/${SERVICE_NAME}.service") >/dev/null
 
-systemctl enable "$SERVICE_NAME" && systemctl start "$SERVICE_NAME"
+systemctl disable "$SERVICE_NAME"
+systemctl enable "$SERVICE_NAME"
+systemctl start "$SERVICE_NAME"
 systemctl status "$SERVICE_NAME"
