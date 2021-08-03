@@ -6,10 +6,10 @@ After=network.target
 Type=forking
 User=${SERVICE_UN}
 WorkingDirectory=${SERVICE_PATH}
-EnvironmentFile=${SERVICE_PATH}/${SERVICE_ENV_FILENAME}
-ExecStart=${SERVICE_PATH}/service_launcher.sh
-StandardOutput=file:${SERVICE_PATH}/run.out
-PIDFile=${SERVICE_PATH}/run.pid
+EnvironmentFile=${SERVICE_PATH}/daemon/service_env.conf
+ExecStart=${SERVICE_PATH}/daemon/service_launcher.sh
+StandardOutput=file:${SERVICE_PATH}/daemon/run.out
+PIDFile=${SERVICE_PATH}/daemon/run.pid
 SuccessExitStatus=143
 
 [Install]

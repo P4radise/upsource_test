@@ -13,9 +13,9 @@ The Mock Service is for testing Upsource Integration. The Mock Service uses [Fla
 3. Run Flask app: `flask run`
 
 
-## Script mode to install as service
+## Script mode to install as daemon (service)
 
-Run: `sudo ./install_as_service.sh <integration path> [http port]`
+Run: `sudo daemon/install_as_daemon.sh <integration path> [http port]`
 
 where:
 - `<integration path>` is `/opt/site.onevizion.com_integration-scheduler/<integration ID>`
