@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function usage() {
-    echo "### Script for install mock service as daemon ###"
+    echo "### Script to install mock service as daemon ###"
     echo "Usage: $(basename "$0") <integration path> [http port]"
     echo " "
     echo "Example: $(basename "$0") /opt/site.onevizion.com_integration-scheduler/123456"
@@ -35,7 +35,7 @@ if [ -n "$OVERRIDE_HTTP_PORT" ]; then
 fi
 
 echo "Service directory: $SERVICE_PATH"
-echo "$SERVICE_NAME will be run on $SERVICE_PORT under $SERVICE_UN user"
+echo "$SERVICE_NAME will run on $SERVICE_PORT under $SERVICE_UN user"
 
 (< "$(dirname "$0")/service_env.template" envsubst | tee "$(dirname "$0")/service_env.conf") >/dev/null
 chown $SERVICE_UN "$(dirname "$0")/service_env.conf"
