@@ -8,8 +8,8 @@
 # SERVICE_ARGS - Command args
 ######################################################
 
-SERVICE_PID="${SERVICE_PATH}/run.pid"
-SERVICE_OUT="${SERVICE_PATH}/run.out"
+SERVICE_PID="${SERVICE_PATH}/daemon/run.pid"
+SERVICE_OUT="${SERVICE_PATH}/daemon/run.out"
 
 FLASK_APP="${SERVICE_PATH}/mock_service.py"
 SERVICE_COMMAND="flask"
