@@ -10,11 +10,11 @@ app = Flask(__name__)
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth('Bearer')
 multi_auth = MultiAuth(basic_auth, token_auth)
-path_to_settings_file = os.path.abspath(constants.SETTINGS_FILE)
+settings_file_path = os.path.abspath(constants.SETTINGS_FILENAME)
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    with open(path_to_settings_file, "rb") as PFile:
+    with open(settings_file_path, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if username == password_data['loginUpsource'] \
@@ -23,7 +23,7 @@ def verify_password(username, password):
 
 @token_auth.verify_token
 def verify_token(token):
-    with open(path_to_settings_file, "rb") as PFile:
+    with open(settings_file_path, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if token == password_data['tokenUpsource']:
@@ -148,7 +148,7 @@ def get_reviews():
     if query not in (constants.Issue.IHUB_146144.issue_id, constants.Issue.DEPL_125306.issue_id, constants.Review.BLNK_CR_127.review_key, constants.Review.BLNK_CR_128.review_key, 'state: open'):
         return make_response(f'constants.Review for {query} not found', constants.StatusCode.EXCEPTION.value)
 
-    with open(path_to_settings_file, 'rb') as PFile:
+    with open(settings_file_path, 'rb') as PFile:
         settings_url = json.loads(PFile.read().decode('utf-8'))['urlOneVizion']
     blnk_cr_127_review_json_data = json.loads(re.sub('settings_url/', settings_url, json.dumps(constants.BLNK_CR_127_REVIEW_JSON_DATA)))
     
