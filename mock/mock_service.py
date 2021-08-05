@@ -12,7 +12,7 @@ multi_auth = MultiAuth(basic_auth, token_auth)
 
 @basic_auth.verify_password
 def verify_password(username, password):
-    with open(constants.SETTINGS_FILE, "rb") as PFile:
+    with open(constants.PATH_TO_SETTINGS_FILE, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if username == password_data['loginUpsource'] \
@@ -21,7 +21,7 @@ def verify_password(username, password):
 
 @token_auth.verify_token
 def verify_token(token):
-    with open(constants.SETTINGS_FILE, "rb") as PFile:
+    with open(constants.PATH_TO_SETTINGS_FILE, "rb") as PFile:
         password_data = json.loads(PFile.read().decode('utf-8'))
 
     if token == password_data['tokenUpsource']:
@@ -146,7 +146,7 @@ def get_reviews():
     if query not in (constants.Issue.IHUB_146144.issue_id, constants.Issue.DEPL_125306.issue_id, constants.Review.BLNK_CR_127.review_key, constants.Review.BLNK_CR_128.review_key, 'state: open'):
         return make_response(f'constants.Review for {query} not found', constants.StatusCode.EXCEPTION.value)
 
-    with open(constants.SETTINGS_FILE, 'rb') as PFile:
+    with open(constants.PATH_TO_SETTINGS_FILE, 'rb') as PFile:
         settings_url = json.loads(PFile.read().decode('utf-8'))['urlOneVizion']
     blnk_cr_127_review_json_data = json.loads(re.sub('settings_url/', settings_url, json.dumps(constants.BLNK_CR_127_REVIEW_JSON_DATA)))
     

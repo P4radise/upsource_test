@@ -1,5 +1,5 @@
 from enum import Enum
-
+import os
 
 class StatusCode(Enum):
     UNAUTHORIZED = 401
@@ -52,4 +52,4 @@ BLNK_CR_128_REVIEW_JSON_DATA = {'reviewId':{'projectId':'blank','reviewId':Revie
                                 'state':1,'createdBy':User.ILYA_EMELYANOV.user_id}
 SUPPORTED_REVIEWS = (Review.BLNK_CR_127.review_key, Review.BLNK_CR_128.review_key)
 SUPPORTED_USERS = (User.ASMOISEENKO.user_id, User.VADIM.user_id, User.ILYA_EMELYANOV.user_id)
-SETTINGS_FILE = 'settings.json'
+PATH_TO_SETTINGS_FILE = os.path.abspath('settings.json')
