@@ -1,0 +1,16 @@
+######################################################
+######## Mock Service Launcher configuration ########
+######################################################
+## Configuration environment variables:
+# SERVICE_PID - path to pid file
+# SERVICE_OUT - path to standard output log file
+# SERVICE_COMMAND - Command to run service
+# SERVICE_ARGS - Command args
+######################################################
+
+SERVICE_PID="${SERVICE_PATH}/daemon/run.pid"
+SERVICE_OUT="${SERVICE_PATH}/daemon/run.out"
+
+FLASK_APP="${SERVICE_PATH}/mock_service.py"
+SERVICE_COMMAND="flask"
+SERVICE_ARGS="run --port=${SERVICE_PORT}"
