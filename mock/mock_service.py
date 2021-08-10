@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response
 from flask_httpauth import HTTPTokenAuth, HTTPBasicAuth, MultiAuth
+from path import Path
 import constants
 import json
 import re
@@ -10,7 +11,9 @@ app = Flask(__name__)
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth('Bearer')
 multi_auth = MultiAuth(basic_auth, token_auth)
-settings_file_path = os.path.abspath(constants.SETTINGS_FILENAME)
+settings_file_path = Path(constants.SETTINGS_FILENAME).get()
+if settings_file_path is None:
+    raise Exception(f'Failed to find path to file {constants.SETTINGS_FILENAME}')
 
 @basic_auth.verify_password
 def verify_password(username, password):
