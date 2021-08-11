@@ -29,13 +29,9 @@
             "type": "string",
             "minLength": 1
         },
-        "loginUpsource": {
+        "tokenUpsource": {
             "type": "string",
-            "minLength": 1
-        },
-        "passUpsource": {
-            "type": "string",
-            "minLength": 1
+            "pattern": "^perm:"
         },
         "products": {
             "type": "array",
