@@ -31,7 +31,7 @@
         },
         "tokenUpsource": {
             "type": "string",
-            "pattern": "^perm:"
+            "minLength": 1
         },
         "products": {
             "type": "array",
