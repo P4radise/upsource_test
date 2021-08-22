@@ -1,6 +1,5 @@
 import sys
 import subprocess
-from jsonschema.exceptions import best_match
 import pkg_resources
 
 
