@@ -9,6 +9,10 @@
     "userNameUpsource": "Full Name",
     "tokenUpsource": "token",
 
+    "packages": [
+        "requests", "onevizion"
+    ],
+
     "products": [
         {
             "projectUpsource": "Upsource Project1",
