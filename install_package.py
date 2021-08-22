@@ -23,6 +23,6 @@ class Package:
 
         if missing_packages:
             try:
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', *missing_packages])
+                subprocess.check_call([sys.executable, '-m', 'pip', 'install', *missing_packages], stdout=subprocess.DEVNULL)
             except Exception as e:
                 raise Exception(f'Failed to install package - {missing_packages}. Exception [{str(e)}]')
